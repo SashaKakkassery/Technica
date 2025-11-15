@@ -7,7 +7,7 @@ const buttons = {
     finances:  document.querySelectorAll("button")[3],
 };
 
-// API Helpers --> EDIT
+// API Helpers
 
 async function apiGET(endpoint) {
     try {
@@ -51,15 +51,17 @@ async function loadRoommateStatus() {
     }
 
     mainRoom.innerHTML = `
-        <h2>Roommate Status</h2>
-        <div class="panelList">
-            ${data.map(r => `
-                <div class="panelItem">
-                    <strong>${r.username}</strong><br>
-                    Status: ${r.isAvailable ? "Available" : "Busy"}<br>
-                    Activity: ${r.activity || "None"}
-                </div>
-            `).join("")}
+        <div class="contentWrapper">
+            <h2>Roommate Status</h2>
+            <div class="panelList">
+                ${data.map(r => `
+                    <div class="panelItem">
+                        <strong>${r.username}</strong><br>
+                        Status: ${r.isAvailable ? "Available" : "Busy"}<br>
+                        Activity: ${r.activity || "None"}
+                    </div>
+                `).join("")}
+            </div>
         </div>
     `;
 
@@ -78,18 +80,77 @@ async function loadDailySchedule() {
         return;
     }
 
+    // Get current time info
+    const now = new Date();
+    const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
+    const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    // Find today's schedule
+    const todaySchedule = data.find(s => s.day === currentDay) || data[0];
+
     mainRoom.innerHTML = `
-        <h2>Daily Schedule & Quiet Hours</h2>
-        <div class="panelList">
-            ${data.map(s => `
-                <div class="panelItem">
-                    <strong>${s.day}</strong><br>
-                    Quiet Hours: ${s.quietHours}<br>
-                    Availability: ${s.availability}
-                </div>
-            `).join("")}
+        <div class="clock">
+            <div class="hour">
+                <div class="hr" id="hr"></div>
+            </div>
+            <div class="minute">
+                <div class="min" id="min"></div>
+            </div>
+            <div class="second">
+                <div class="sec" id="sec"></div>
+            </div>
+            <span style="--i:1"><b>1</b></span>
+            <span style="--i:2"><b>2</b></span>
+            <span style="--i:3"><b>3</b></span>
+            <span style="--i:4"><b>4</b></span>
+            <span style="--i:5"><b>5</b></span>
+            <span style="--i:6"><b>6</b></span>
+            <span style="--i:7"><b>7</b></span>
+            <span style="--i:8"><b>8</b></span>
+            <span style="--i:9"><b>9</b></span>
+            <span style="--i:10"><b>10</b></span>
+            <span style="--i:11"><b>11</b></span>
+            <span style="--i:12"><b>12</b></span>
+        </div>
+        <div class="scheduleContent">
+            <h2>Daily Schedule & Quiet Hours</h2>
+            <div class="currentTimeInfo">
+                <p><strong>Current Time:</strong> ${currentTime}</p>
+                <p><strong>Today:</strong> ${currentDay}</p>
+            </div>
+            <div class="panelList">
+                ${data.map(s => {
+                    const isToday = s.day === currentDay;
+                    return `
+                        <div class="panelItem ${isToday ? 'today' : ''}">
+                            <strong>${s.day}</strong><br>
+                            Quiet Hours: ${s.quietHours}<br>
+                            Availability: ${s.availability}
+                        </div>
+                    `;
+                }).join("")}
+            </div>
         </div>
     `;
+
+    // Re-initialize clock after adding it to DOM
+    // Use setTimeout to ensure DOM is fully updated
+    setTimeout(() => {
+        const hr = document.getElementById("hr");
+        const min = document.getElementById("min");
+        const sec = document.getElementById("sec");
+
+        if (hr && min && sec) {
+            hr.style.transformOrigin = "bottom center";
+            min.style.transformOrigin = "bottom center";
+            sec.style.transformOrigin = "bottom center";
+            updateClock();
+        } else {
+            console.error("Clock elements not found after schedule load");
+        }
+    }, 10);
 
     fadeIn(mainRoom);
 }
@@ -107,19 +168,21 @@ async function loadChores() {
     }
 
     mainRoom.innerHTML = `
-    <h2>Chores</h2>
-    <div class="panelList">
-        ${data.map(task => `
-            <div class="panelItem">
-                <strong>${task.task}</strong><br>
-                Assigned To: ${task.assignedTo}<br>
-                Status: ${task.completed ? "\u2714 Done" : "\u274C Not Done"}<br>
-                ${!task.completed ? `
-                <button class="completeBtn" data-id="${task.id}">
-                    Mark Complete
-                </button>` : ""}
-            </div>
-        `).join("")}
+    <div class="contentWrapper">
+        <h2>Chores</h2>
+        <div class="panelList">
+            ${data.map(task => `
+                <div class="panelItem">
+                    <strong>${task.task}</strong><br>
+                    Assigned To: ${task.assignedTo}<br>
+                    Status: ${task.completed ? "\u2714 Done" : "\u274C Not Done"}<br>
+                    ${!task.completed ? `
+                    <button class="completeBtn" data-id="${task.id}">
+                        Mark Complete
+                    </button>` : ""}
+                </div>
+            `).join("")}
+        </div>
     </div>
 `;
 
@@ -149,22 +212,66 @@ async function loadFinances() {
     }
 
     mainRoom.innerHTML = `
-        <h2>Finances / Bills</h2>
-        <div class="panelList">
-            ${data.map(bill => `
-                <div class="panelItem">
-                    <strong>${bill.name}</strong><br>
-                    Amount: $${bill.amount}<br>
-                    Owes: ${bill.owedBy}<br>
-                    Due: ${bill.dueDate}<br>
-                    Status: ${bill.paid ? "Paid" : "Unpaid"}
-                </div>
-            `).join("")}
+        <div class="contentWrapper">
+            <h2>Finances / Bills</h2>
+            <div class="panelList">
+                ${data.map(bill => `
+                    <div class="panelItem">
+                        <strong>${bill.name}</strong><br>
+                        Amount: $${bill.amount}<br>
+                        Owes: ${bill.owedBy}<br>
+                        Due: ${bill.dueDate}<br>
+                        Status: ${bill.paid ? "Paid" : "Unpaid"}
+                    </div>
+                `).join("")}
+            </div>
         </div>
     `;
 
     fadeIn(mainRoom);
 }
+
+//Clock
+
+function updateClock() {
+    const hr = document.getElementById("hr");
+    const min = document.getElementById("min");
+    const sec = document.getElementById("sec");
+
+    // Only update if clock elements exist
+    if (!hr || !min || !sec) {
+        return;
+    }
+
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+
+    const hrDeg = (hours % 12) * 30 + minutes * 0.5;
+    const minDeg = minutes * 6;
+    const secDeg = seconds * 6;
+
+    hr.style.transform = `rotate(${hrDeg}deg)`;
+    min.style.transform = `rotate(${minDeg}deg)`;
+    sec.style.transform = `rotate(${secDeg}deg)`;
+}
+
+// Initialize clock if it exists on page load
+const initialHr = document.getElementById("hr");
+const initialMin = document.getElementById("min");
+const initialSec = document.getElementById("sec");
+
+if (initialHr && initialMin && initialSec) {
+    initialHr.style.transformOrigin = "bottom center";
+    initialMin.style.transformOrigin = "bottom center";
+    initialSec.style.transformOrigin = "bottom center";
+    updateClock();
+}
+
+// Update clock every second (works even when clock is recreated)
+setInterval(updateClock, 1000);
+
 
 buttons.roommates.addEventListener("click", loadRoommateStatus);
 buttons.schedule.addEventListener("click", loadDailySchedule);
