@@ -1,13 +1,12 @@
 package roommates;
 
-
 public class Chore {
    private String description;
-   private String assignedTo;
+   private Roommate assignedTo;
    private boolean completed;
 
    //constructor
-   public Chore(String description, String assignedTo){
+   public Chore(String description, Roommate assignedTo){
        this.description = description;
        this.assignedTo = assignedTo;
        this.completed = false;
@@ -20,11 +19,11 @@ public class Chore {
        return description;
    }
 
-   public String getAssignedTo(){
+   public Roommate getAssignedTo(){
        return assignedTo;
    }
 
-   public boolean getIsCompleted(){
+   public boolean isCompleted(){
        return completed;
    }
 
