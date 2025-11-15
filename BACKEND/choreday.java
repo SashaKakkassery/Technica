@@ -1,17 +1,17 @@
 package roommates;
 import java.util.*;
 
-public class Day {
+public class ChoreDay {
    private String dayOfWeek;
    private ArrayList<Chore> chores;
 
    //constructor
-   public Day(String dayOfWeek){
+   public ChoreDay(String dayOfWeek){
        this.dayOfWeek = dayOfWeek;
        this.chores = new ArrayList<>();
    }
 
-   public Day() {}
+   public ChoreDay() {}
 
    //methods
    public void addChore(Chore name){
