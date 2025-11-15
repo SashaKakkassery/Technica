@@ -15,7 +15,7 @@ public class Day {
 
    //methods
    public void addChore(Chore name){
-       chores.add(c);
+       chores.add(name);
    }
 
    public ArrayList<Chore> getChores(){

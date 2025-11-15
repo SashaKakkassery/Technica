@@ -1,14 +1,18 @@
+package roommates;
 
+public class User {
+    private String username;
+    private String password;
 
-
-
-
-public class User{
-
-
-    public static void main(String[] args){
-        System.out.println("Hello world!");
+    //constructor
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
+    public User() {}
 
+    // getters
+    public String getUsername() { return username; }
+    public String getPassword() { return password; }
 }
