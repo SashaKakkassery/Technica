@@ -13,6 +13,8 @@ public class Chore {
        this.completed = false;
    }
 
+   public Chore() {}
+
    //getters
    public String getDescription(){
        return description;
