@@ -65,7 +65,6 @@ h1{
     font-size: 18px;
     cursor: pointer;
     box-shadow: 2px 3px 1px rgba(0, 0, 0, 0.3);
-
     transition: all 0.3s ease-in-out;
 }
 
@@ -85,11 +84,13 @@ h1{
     grid-column: 2;
     background-color: blueviolet;
     gap: 20px;
-    width: 300vw;
+    width: 600px;
     height: 500px;
-    border: groove, 20px, rgb(224, 171, 48);
+    border: groove 20px rgb(224, 171, 48);
     border-radius: 50px;
     position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .clock{
@@ -99,12 +100,13 @@ h1{
     background: rgb(195, 195, 195);
     width: 150px;
     height: 150px;
-    border-radius: 100%;
-    border: groove, 10px, black;
+    border-radius: 50%;
+    border: groove 10px black;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
+    overflow: visible;
+    z-index: 10;
 }
 
 .clock::before{
@@ -113,7 +115,7 @@ h1{
     width: 8px;
     height: 8px;
     background-color: rgb(255, 255, 255);
-    border-radius: 100%;
+    border-radius: 50%;
     z-index:1000;
 }
 
@@ -121,8 +123,9 @@ h1{
     position: absolute;
     text-align: center;
     transform: rotate(calc(30deg * var(--i))) 
-                translateY(-60px)
+                translateY(-65px)
                  rotate(calc(-30deg * var(--i)));
+    z-index: 15;
 }
 
 .clock span b{
@@ -134,61 +137,140 @@ h1{
 .minute,
 .second{
     position: absolute;
-}
-
-.hour, .hr{
-    width: 160px;
-    height: 160px;
-}
-
-.minute, .min{
-    width: 190px;
-    height: 190px;
-}
-
-.second, .sec{
-    width: 230px;
-    height: 230px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
 }
 
 .hr, .min, .sec{
-    display: flex;
-    justify-content: center;
     position: absolute;
-    border-radius: 50%;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
 }
-
-.hr { z-index: 1;}
-.min { z-index: 2;}
-.sec { z-index: 3;}
-
 
 .hr::before{
     content: '';
     width: 5px;
-    height: 50px;
-    background: linear-gradient(to top,rgb(24, 149, 61), rgb(59, 148, 0));
+    height: 40px;
+    background: green;
     position: absolute;
-    border-radius: 6px 6px 0 0;
-    top: 30px;
+    bottom: 0;
+    left: 50%;
+    transform-origin: bottom center;
+    transform: translateX(-50%);
+    z-index: 20;
+    transition: transform 0.1s linear;
 }
 
 .min::before{
     content: '';
     width: 3px;
-    height: 65px;
-    background: linear-gradient(to top, rgb(146, 146, 169), rgb(33, 33, 255));
+    height: 55px;
+    background: blue;
     position: absolute;
-    border-radius: 5px 5px 0 0;
-    top: 20px;
+    bottom: 0;
+    left: 50%;
+    transform-origin: bottom center;
+    transform: translateX(-50%);
+    z-index: 21;
+    transition: transform 0.1s linear;
 }
 
 .sec::before{
     content: '';
-    width: 1.5px;
-    height: 80px;
-    background: linear-gradient(to top, rgb(252, 80, 80), rgb(255, 0, 0));
+    width: 2px;
+    height: 65px;
+    background:red;
     position: absolute;
-    border-radius: 4px 4px 0 0;
-    top: 50px;
+    bottom: 0;
+    left: 50%;
+    transform-origin: bottom center;
+    transform: translateX(-50%);
+    z-index: 22;
+    transition: transform 0.1s linear;
+}
+
+.scheduleContent {
+    margin-left: 180px;
+    padding: 20px;
+    height: calc(100% - 40px);
+    max-height: calc(100% - 40px);
+    overflow-y: auto;
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+.contentWrapper {
+    padding: 20px;
+    height: calc(100% - 40px);
+    max-height: calc(100% - 40px);
+    overflow-y: auto;
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+.contentWrapper h2 {
+    font-family: 'Century Gothic', sans-serif;
+    color: white;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.scheduleContent h2 {
+    font-family: 'Century Gothic', sans-serif;
+    color: white;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.currentTimeInfo {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-family: 'Century Gothic', sans-serif;
+    color: white;
+}
+
+.currentTimeInfo p {
+    margin: 5px 0;
+}
+
+.panelList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.panelItem {
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    font-family: 'Century Gothic', sans-serif;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.panelItem:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: translateX(5px);
+}
+
+.panelItem.today {
+    background-color: rgba(255, 215, 0, 0.4);
+    border: 3px solid gold;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.panelItem strong {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 8px;
 }
