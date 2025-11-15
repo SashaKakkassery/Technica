@@ -1,0 +1,87 @@
+.root{
+    --main-font: 'Century Gothic', sans-serif;
+}
+
+
+body{
+    background-image: url('cloud_background.jpg');;
+    background-repeat: no-repeat;
+   
+}
+
+.layout{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+}
+
+h1{
+    font-family: 'Century Gothic', sans-serif;
+    font-weight: bold;
+    color: black;
+    text-align: center;
+    font-size: 40px;
+}
+
+.Container{
+    grid-column: 1;
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(4, auto);
+    width: 200px;
+    height: 500px;
+    background-color:burlywood;
+    border-radius: 50px;
+    border: groove, 20px, purple
+}
+
+.menu ul{
+    padding: 12px;
+    display:flex;
+    flex-direction: column;
+    text-align: center;
+    margin:auto;
+    gap:100px;
+}
+
+.menu ul li{
+    list-style: none;
+    margin: 0 20px;
+}
+
+.menu ul li button{
+    font-family: 'Century Gothic', sans-serif;
+    color: black;
+    border: green 5px solid;
+    border-radius: 20px;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 2px 3px 1px rgba(0, 0, 0, 0.3);
+
+    transition: all 0.3s ease-in-out;
+}
+
+.menu ul li button:hover{
+    background-color: lightgreen;
+    color: rgb(255, 255, 255);
+    transform: translate(0px, -2.5px);
+}
+
+.menu ul li button:active{
+    background-color: rgb(65, 120, 65);
+    color: rgb(0, 0, 0);
+}   
+
+
+.mainRoom{
+    grid-column: 2;
+    background-color: blueviolet;
+    gap: 20px;
+    width: 300vw;
+    height: 500px;
+    border: groove, 20px, rgb(224, 171, 48);
+    border-radius: 50px;
+}
