@@ -1,11 +1,5 @@
-const mainRoom = document.querySelector(".mainRoom");
-
-const buttons = {
-    roommates: document.querySelectorAll("button")[0],
-    schedule:  document.querySelectorAll("button")[1],
-    chores:    document.querySelectorAll("button")[2],
-    finances:  document.querySelectorAll("button")[3],
-};
+let mainRoom;
+let buttons = {};
 
 // API Helpers
 
@@ -272,10 +266,39 @@ if (initialHr && initialMin && initialSec) {
 // Update clock every second (works even when clock is recreated)
 setInterval(updateClock, 1000);
 
+// Wait for DOM to be ready before setting up event listeners
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
 
-buttons.roommates.addEventListener("click", loadRoommateStatus);
-buttons.schedule.addEventListener("click", loadDailySchedule);
-buttons.chores.addEventListener("click", loadChores);
-buttons.finances.addEventListener("click", loadFinances);
-
-loadRoommateStatus();
+function init() {
+    // Get mainRoom and buttons after DOM is ready
+    mainRoom = document.querySelector(".mainRoom");
+    
+    if (!mainRoom) {
+        console.error("mainRoom element not found. Check your HTML structure.");
+        return;
+    }
+    
+    buttons = {
+        roommates: document.querySelectorAll("button")[0],
+        schedule:  document.querySelectorAll("button")[1],
+        chores:    document.querySelectorAll("button")[2],
+        finances:  document.querySelectorAll("button")[3],
+    };
+    
+    // Verify buttons exist before adding event listeners
+    if (buttons.roommates && buttons.schedule && buttons.chores && buttons.finances) {
+        buttons.roommates.addEventListener("click", loadRoommateStatus);
+        buttons.schedule.addEventListener("click", loadDailySchedule);
+        buttons.chores.addEventListener("click", loadChores);
+        buttons.finances.addEventListener("click", loadFinances);
+        
+        loadRoommateStatus();
+    } else {
+        console.error("Buttons not found. Make sure the HTML is loaded correctly.");
+        console.log("Found buttons:", document.querySelectorAll("button").length);
+    }
+}
