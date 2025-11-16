@@ -1,3 +1,5 @@
+import { createUser, updateUser, deleteUser, getUserById, createRoommate, updateRoommate, deleteRoommate, getRoommateById } from "/BACKEND/functions.js"
+
 let mainRoom;
 let buttons = {};
 
