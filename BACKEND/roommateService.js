@@ -1,5 +1,5 @@
 import { app } from "./firebase.js";
-import { doc, collection, addDoc, getFirestore, deleteDoc, updateDoc, getDocs, query, where  } from "firebase/firestore";
+import { doc, collection, addDoc, getFirestore, deleteDoc, updateDoc, getDocs, query, where} from "firebase/firestore";
 
 const db = getFirestore(app);
 
