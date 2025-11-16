@@ -66,7 +66,7 @@ export async function getRoommateIdByName(name) {
 }
 
 // takes a string as name
-export async function getUserById(name) {
+export async function getRoommateById(name) {
   const userId = getRoommateIdByName(name);
   if (!userId || typeof userId !== "string") {
     console.log("Invalid or missing user ID:", userId);
