@@ -273,3 +273,25 @@ h1{
     display: block;
     margin-bottom: 8px;
 }
+
+.status-option {
+    display: inline-block;
+    margin-right: 15px;
+    margin-top: 5px;
+    cursor: pointer;
+    font-family: 'Century Gothic', sans-serif;
+    color: white;
+    user-select: none;
+}
+
+.status-option input[type="radio"] {
+    margin-right: 5px;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    accent-color: rgb(224, 171, 48);
+}
+
+.status-option:hover {
+    opacity: 0.8;
+}
