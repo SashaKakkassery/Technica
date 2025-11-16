@@ -50,6 +50,11 @@ const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const pathname = parsedUrl.pathname;
     const method = req.method;
+    
+    // Debug logging for POST requests
+    if (method === 'POST') {
+        console.log(`POST request to: ${pathname}`);
+    }
 
     // Handle API endpoints
     if (pathname.startsWith('/roommates') && method === 'GET') {
@@ -69,26 +74,68 @@ const server = http.createServer((req, res) => {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(mockData.chores));
             return;
-        } else if (method === 'POST' && pathname.includes('/complete')) {
-            let body = '';
-            req.on('data', chunk => {
-                body += chunk.toString();
-            });
-            req.on('end', () => {
-                try {
-                    const data = JSON.parse(body);
-                    const chore = mockData.chores.find(c => c.id === data.id);
-                    if (chore) {
-                        chore.completed = true;
+        } else if (method === 'POST') {
+            console.log(`Processing POST to chores: ${pathname}`);
+            // Check for specific endpoints first
+            if (pathname === '/chores/complete' || pathname.includes('/complete')) {
+                console.log('Matched /complete endpoint');
+                let body = '';
+                req.on('data', chunk => {
+                    body += chunk.toString();
+                });
+                req.on('end', () => {
+                    try {
+                        const data = JSON.parse(body);
+                        const choreId = parseInt(data.id);
+                        const chore = mockData.chores.find(c => c.id === choreId);
+                        if (chore) {
+                            chore.completed = true;
+                            console.log(`Chore ${choreId} marked as completed`);
+                        } else {
+                            console.log(`Chore ${choreId} not found`);
+                        }
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ success: true }));
+                    } catch (err) {
+                        console.error('Error completing chore:', err);
+                        res.writeHead(400, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Invalid request' }));
                     }
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: true }));
-                } catch (err) {
-                    res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Invalid request' }));
-                }
-            });
-            return;
+                });
+                return;
+            } else if (pathname === '/chores/incomplete' || pathname.includes('/incomplete')) {
+                console.log('Matched /incomplete endpoint');
+                let body = '';
+                req.on('data', chunk => {
+                    body += chunk.toString();
+                });
+                req.on('end', () => {
+                    try {
+                        const data = JSON.parse(body);
+                        const choreId = parseInt(data.id);
+                        const chore = mockData.chores.find(c => c.id === choreId);
+                        if (chore) {
+                            chore.completed = false;
+                            console.log(`Chore ${choreId} marked as incomplete`);
+                        } else {
+                            console.log(`Chore ${choreId} not found`);
+                        }
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ success: true }));
+                    } catch (err) {
+                        console.error('Error marking chore as incomplete:', err);
+                        res.writeHead(400, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Invalid request' }));
+                    }
+                });
+                return;
+            } else {
+                // Unknown POST endpoint for chores
+                console.log(`Unknown POST endpoint: ${pathname}`);
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Endpoint not found' }));
+                return;
+            }
         }
     }
 
