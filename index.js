@@ -1,49 +1,6 @@
 let mainRoom;
 let buttons = {};
 
-// API Helpers
-
-async function apiGET(endpoint) {
-    try {
-        const res = await fetch(`http://localhost:8080/${endpoint}`);
-        return await res.json();
-    } catch (err) {
-        console.error("GET error:", err);
-        return { error: "Failed to fetch data." };
-    }
-}
-
-async function apiPOST(endpoint, data) {
-    try {
-        const res = await fetch(`http://localhost:8080/${endpoint}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-        
-        // Check if response is ok
-        if (!res.ok) {
-            const text = await res.text();
-            console.error("POST response error:", res.status, text);
-            return { error: `Server error: ${res.status}` };
-        }
-        
-        // Get response text first to debug
-        const text = await res.text();
-        
-        // Try to parse as JSON
-        try {
-            return JSON.parse(text);
-        } catch (parseError) {
-            console.error("JSON parse error:", parseError);
-            console.error("Response text:", text);
-            return { error: "Invalid JSON response from server." };
-        }
-    } catch (err) {
-        console.error("POST error:", err);
-        return { error: "Failed to send data." };
-    }
-}
 
 function fadeIn(element) {
     element.style.opacity = 0;
