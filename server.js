@@ -1,6 +1,6 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+const http = require('http');    //// These might be problematic because 
+const fs = require('fs');        //// I changed the "type" in package .json file 
+const path = require('path');    //// to "module" 
 const url = require('url');
 
 const PORT = 8080;
