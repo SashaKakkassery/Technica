@@ -9,8 +9,8 @@ export function createRoommate(roommateId) {
         const dates = roommateId.Available_Dates;
         const bills = roommateId.Bills;
         const chores = roommateId.chores;
-        const name = roommateId.name;
-        addDoc(usersRef, {dates, bills, chores, name});
+        const user = roommateId.user;
+        addDoc(usersRef, {dates, bills, chores, user});
     } catch (error){
         console.error("failed to add user:", error);
     }
