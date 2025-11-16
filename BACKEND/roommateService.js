@@ -1,5 +1,5 @@
 import { app } from "./firebase.js";
-import { collection, addDoc, getFirestore, deleteDoc, updateDoc } from "firebase/firestore";
+import { doc, collection, addDoc, getFirestore, deleteDoc, updateDoc } from "firebase/firestore";
 
 const db = getFirestore(app);
 
@@ -16,8 +16,14 @@ export function createRoommate(roommateId) {
     }
 }
 
-export function updateRoommate(roommateId, updates) {
+export function updateRoommate(roommateName, updates) {
     try{
+        const roommateId =  getUserIdByName(roommateName);
+        if (!roommateId || typeof roommateId !== "string") {
+          console.log("Invalid or missing user ID:", roommateId);
+          return;
+        }
+
         const roommateDoc = doc(db, "roommates", roommateId);
         updateDoc(roommateDoc, updates);
     } catch (error){
@@ -25,8 +31,14 @@ export function updateRoommate(roommateId, updates) {
     }
 }
 
-export function destroyRoommate(roommateId) {
+export function destroyRoommate(roommateName) {
     try{
+        const roommateId =  getUserIdByName(roommateName);
+        if (!roommateId || typeof roommateId !== "string") {
+          console.log("Invalid or missing user ID:", roommateId);
+          return;
+        }
+
         const roommateDoc = doc(db, "roommates", roommateId);
         deleteDoc(roommateDoc);
     } catch (error){
@@ -35,3 +47,20 @@ export function destroyRoommate(roommateId) {
 }
 
 
+export async function getUserIdByName(name) {
+  try {
+    const q = query(collection(db, "roommates"), where("name", "==", name));
+    const snapshot = getDocs(q);
+
+    const docs = snapshot?.docs;
+    if (!docs || docs.length === 0) {
+      console.log("No user found with name:", name);
+      return null;
+    }
+
+    return docs[0].id;
+  } catch (error) {
+    console.error("Error in getUserIdByName:", error);
+    return null;
+  }
+}
