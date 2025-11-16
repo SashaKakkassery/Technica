@@ -166,10 +166,10 @@ async function loadChores() {
         <h2>Chores</h2>
         <div class="panelList">
             ${data.map(task => `
-                <div class="panelItem">
+                <div class="panelItem" data-task-id="${task.id}">
                     <strong>${task.task}</strong><br>
                     Assigned To: ${task.assignedTo}<br>
-                    Status: ${task.completed ? "\u2714 Done" : "\u274C Not Done"}<br>
+                    Status: <span class="task-status">${task.completed ? " Done" : "Not Done"}</span><br>
                     ${!task.completed ? `
                     <button class="completeBtn" data-id="${task.id}">
                         Mark Complete
@@ -180,13 +180,29 @@ async function loadChores() {
     </div>
 `;
 
-document.querySelectorAll(".completeBtn").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const id = btn.getAttribute("data-id");
-
-            await apiPOST("chores/complete", { id });
-
-            loadChores(); 
+    // Set up event listeners for complete buttons
+    document.querySelectorAll(".completeBtn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+            const id = parseInt(btn.getAttribute("data-id"));
+            const panelItem = btn.closest(".panelItem");
+            const statusSpan = panelItem.querySelector(".task-status");
+            
+            // Update UI immediately (optimistic update)
+            if (statusSpan) {
+                statusSpan.textContent = "Done";
+            }
+            btn.remove(); // Remove the button
+            
+            // Then update on server
+            const result = await apiPOST("chores/complete", { id });
+            
+            // Reload to ensure consistency with server
+            if (!result.error) {
+                loadChores();
+            } else {
+                // If server update failed, reload to show correct state
+                loadChores();
+            }
         });
     });
 
