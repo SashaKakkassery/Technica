@@ -4,6 +4,7 @@ import java.util.*;
 public class ChoreDay {
    private String dayOfWeek;
    private ArrayList<Chore> chores;
+   private User user;
 
    //constructor
    public ChoreDay(String dayOfWeek){

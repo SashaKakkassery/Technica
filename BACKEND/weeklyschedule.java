@@ -3,6 +3,8 @@ package roommates;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+/// add enums for all the days of the week
+
 public class WeeklySchedule {
     private ArrayList<DailySchedule> week = new ArrayList<>();
 
@@ -19,7 +21,7 @@ public class WeeklySchedule {
             week.add(new DailySchedule("Sunday"));
         }
     }
-    
+
     public WeeklySchedule() {
         week = new ArrayList<>(); // initialize empty list
     }

@@ -13,6 +13,9 @@ public class User {
     public User() {}
 
     // getters
-    public String getUsername() { return username; }
+    public String getUsername() { 
+        
+        return username; 
+    }
     public String getPassword() { return password; }
 }
