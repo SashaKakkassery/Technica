@@ -1,5 +1,5 @@
 import { app } from "./firebase.js";
-import { doc, collection, addDoc, getFirestore, deleteDoc, updateDoc, getDocs, query, where} from "firebase/firestore";
+import { doc, collection, addDoc, getFirestore, deleteDoc, updateDoc, getDocs, query, where, getDoc } from "firebase/firestore";
 
 const db = getFirestore(app);
 
@@ -47,7 +47,7 @@ export function destroyRoommate(roommateName) {
 }
 
 
-export async function getUserIdByName(name) {
+export async function getRoommateIdByName(name) {
   try {
     const q = query(collection(db, "roommates"), where("name", "==", name));
     const snapshot = getDocs(q);
@@ -61,6 +61,25 @@ export async function getUserIdByName(name) {
     return docs[0].id;
   } catch (error) {
     console.error("Error in getUserIdByName:", error);
+    return null;
+  }
+}
+
+// takes a string as name
+export async function getUserById(name) {
+  const userId = getRoommateIdByName(name);
+  if (!userId || typeof userId !== "string") {
+    console.log("Invalid or missing user ID:", userId);
+    return;
+  }
+
+  const userRef = doc(db, "roommates", userId);
+  const snapshot = getDoc(userRef);
+
+  if (snapshot.exists()) {
+    return snapshot.data(); 
+  } else {
+    console.log("No such user found.");
     return null;
   }
 }
