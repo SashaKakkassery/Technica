@@ -82,15 +82,3 @@ export async function getUserById(name) {
     return null;
   }
 }
-
-
-
-
-
-
-const user = {
-    name: "Frank",
-    password: "0000"
-}
-
-destroyUser("Frank");
