@@ -1,5 +1,5 @@
 import { app } from "./firebase.js";
-import { doc, collection, addDoc, getFirestore, deleteDoc, updateDoc, getDocs, query, where  } from "firebase/firestore";
+import { doc, collection, addDoc, getFirestore, deleteDoc, updateDoc, getDocs, query, where, getDoc} from "firebase/firestore";
 
 const db = getFirestore(app);
 
@@ -64,6 +64,25 @@ export async function getUserIdByName(name) {
     return null;
   }
 }
+
+export async function getUserById(name) {
+  const userId = getUserIdByName(name);
+  if (!userId || typeof userId !== "string") {
+    console.log("Invalid or missing user ID:", userId);
+    return;
+  }
+
+  const userRef = doc(db, "users", userId);
+  const snapshot = getDoc(userRef);
+
+  if (snapshot.exists()) {
+    return snapshot.data(); 
+  } else {
+    console.log("No such user found.");
+    return null;
+  }
+}
+
 
 
 
