@@ -20,7 +20,25 @@ async function apiPOST(endpoint, data) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         });
-        return await res.json();
+        
+        // Check if response is ok
+        if (!res.ok) {
+            const text = await res.text();
+            console.error("POST response error:", res.status, text);
+            return { error: `Server error: ${res.status}` };
+        }
+        
+        // Get response text first to debug
+        const text = await res.text();
+        
+        // Try to parse as JSON
+        try {
+            return JSON.parse(text);
+        } catch (parseError) {
+            console.error("JSON parse error:", parseError);
+            console.error("Response text:", text);
+            return { error: "Invalid JSON response from server." };
+        }
     } catch (err) {
         console.error("POST error:", err);
         return { error: "Failed to send data." };
@@ -169,42 +187,20 @@ async function loadChores() {
                 <div class="panelItem" data-task-id="${task.id}">
                     <strong>${task.task}</strong><br>
                     Assigned To: ${task.assignedTo}<br>
-                    Status: <span class="task-status">${task.completed ? " Done" : "Not Done"}</span><br>
-                    ${!task.completed ? `
-                    <button class="completeBtn" data-id="${task.id}">
-                        Mark Complete
-                    </button>` : ""}
+                    Status: 
+                    <label class="status-option">
+                        <input type="radio" name="status-${task.id}" class="status-radio" value="done" data-id="${task.id}" ${task.completed ? 'checked' : ''}>
+                        Done
+                    </label>
+                    <label class="status-option">
+                        <input type="radio" name="status-${task.id}" class="status-radio" value="notdone" data-id="${task.id}" ${!task.completed ? 'checked' : ''}>
+                        Not Done
+                    </label>
                 </div>
             `).join("")}
         </div>
     </div>
 `;
-
-    // Set up event listeners for complete buttons
-    document.querySelectorAll(".completeBtn").forEach(btn => {
-        btn.addEventListener("click", async (e) => {
-            const id = parseInt(btn.getAttribute("data-id"));
-            const panelItem = btn.closest(".panelItem");
-            const statusSpan = panelItem.querySelector(".task-status");
-            
-            // Update UI immediately (optimistic update)
-            if (statusSpan) {
-                statusSpan.textContent = "Done";
-            }
-            btn.remove(); // Remove the button
-            
-            // Then update on server
-            const result = await apiPOST("chores/complete", { id });
-            
-            // Reload to ensure consistency with server
-            if (!result.error) {
-                loadChores();
-            } else {
-                // If server update failed, reload to show correct state
-                loadChores();
-            }
-        });
-    });
 
     fadeIn(mainRoom);
 }
@@ -279,7 +275,7 @@ if (initialHr && initialMin && initialSec) {
     updateClock();
 }
 
-// Update clock every second (works even when clock is recreated)
+// Update clock every second
 setInterval(updateClock, 1000);
 
 // Wait for DOM to be ready before setting up event listeners
@@ -317,4 +313,37 @@ function init() {
         console.error("Buttons not found. Make sure the HTML is loaded correctly.");
         console.log("Found buttons:", document.querySelectorAll("button").length);
     }
+    
+    // Set up event delegation for chore status 
+    // This is set up once and works for all dynamically loaded content
+    mainRoom.addEventListener("change", async (e) => {
+        // Check if the changed element is a status
+        if (e.target && e.target.classList.contains("status-radio") && e.target.checked) {
+            const id = parseInt(e.target.getAttribute("data-id"));
+            const isDone = e.target.value === "done";
+            
+            console.log(`Updating chore ${id} to ${isDone ? 'Done' : 'Not Done'}`);
+            
+            try {
+                // Update on server and wait for response
+                const result = await apiPOST(isDone ? "chores/complete" : "chores/incomplete", { id });
+                
+                console.log("Server response:", result);
+                
+                // Check if update was successful
+                if (result && result.error) {
+                    console.error("Server error:", result.error);
+                    // If there's an error, reload to show correct state
+                    await loadChores();
+                } else {
+                    // Success - reload to show updated state
+                    await loadChores();
+                }
+            } catch (error) {
+                console.error("Error updating chore status:", error);
+                // Reload to show correct state
+                await loadChores();
+            }
+        }
+    });
 }
